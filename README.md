@@ -76,9 +76,23 @@ dotnet test Escola.slnx --configuration Release
 
 O workflow **Testes e cobertura .NET** executa as suítes xUnit unitária e HTTP. O resumo da execução mostra a cobertura consolidada. Em **Artifacts**, baixe **cobertura-dotnet** para consultar o HTML (`coverage/index.html`), o XML Cobertura e os resultados TRX.
 
+O artefato **relatorio-allure** contém o relatório navegável dos testes e os resultados JSON. Extraia o ZIP e abra `allure-report/index.html` diretamente no navegador. O HTML é autocontido e mostra os cenários, parâmetros, duração e resultado de cada teste. A pipeline também gera e publica o Allure quando uma suíte registra falhas.
+
+### Gerar o Allure localmente
+
+Com Node.js 24 instalado, remova a pasta gerada `allure-results` antes de repetir a execução. Na raiz, execute:
+
+```sh
+dotnet test Escola.slnx --configuration Release -- xUnit.ReporterSwitch=allure
+npx --yes allure@3.33.0 generate --clean
+```
+
+Abra `allure-report/index.html` no navegador. A configuração do gerador está em `allurerc.json`, e `tests/allureConfig.json` direciona as duas suítes para `allure-results`. O pacote `Allure.Xunit` usa o runner xUnit 2.8.2 por compatibilidade com a descoberta de reporters.
+
 Para gravar o vídeo da atividade:
 
 1. Mostre a API .NET e o cálculo de resultado acadêmico.
 2. Mostre os testes unitários de aprovação, reprovação e notas inválidas.
 3. Abra a execução do workflow em **Actions** e mostre a etapa dos testes unitários com o resultado aprovado.
 4. Na mesma execução, baixe **cobertura-dotnet** e abra o relatório HTML. Mostre as linhas e ramificações cobertas.
+5. Baixe **relatorio-allure** e abra `allure-report/index.html` para mostrar os cenários e os resultados dos testes.

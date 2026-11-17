@@ -1,7 +1,10 @@
+using Allure.Net.Commons.Attributes;
 using Escola.Api.ResultadosAcademicos;
 
 namespace Escola.UnitTests;
 
+[AllureParentSuite("Testes unitários")]
+[AllureSuite("Regra de cálculo acadêmico")]
 public sealed class ResultadoAcademicoServiceTests
 {
     private readonly ResultadoAcademicoService _servico = new();

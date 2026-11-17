@@ -28,6 +28,11 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Configurar Node.js para o Allure
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+
       - name: Restaurar dependências
         run: dotnet restore Escola.slnx
 
@@ -35,19 +40,37 @@ jobs:
         run: dotnet format Escola.slnx --verify-no-changes --no-restore
 
       - name: Compilar
+        id: build
         run: dotnet build Escola.slnx --configuration Release --no-restore -warnaserror
 
       - name: Executar testes unitários
         run: |
           dotnet test tests/Escola.UnitTests/Escola.UnitTests.csproj \
             --configuration Release --no-build --collect 'XPlat Code Coverage' \
-            --results-directory TestResults/unit --logger 'trx;LogFileName=unit.trx'
+            --results-directory TestResults/unit --logger 'trx;LogFileName=unit.trx' \
+            -- xUnit.ReporterSwitch=allure
 
       - name: Executar testes HTTP
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           dotnet test tests/Escola.IntegrationTests/Escola.IntegrationTests.csproj \
             --configuration Release --no-build --collect 'XPlat Code Coverage' \
-            --results-directory TestResults/integration --logger 'trx;LogFileName=integration.trx'
+            --results-directory TestResults/integration --logger 'trx;LogFileName=integration.trx' \
+            -- xUnit.ReporterSwitch=allure
+
+      - name: Gerar relatório Allure
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npx --yes allure@3.33.0 generate --clean
+
+      - name: Publicar relatório e resultados Allure
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relatorio-allure
+          path: |
+            allure-report/
+            allure-results/
+          if-no-files-found: error
 
       - name: Gerar relatório consolidado
         run: |

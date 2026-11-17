@@ -5,11 +5,14 @@ using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Allure.Net.Commons.Attributes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Escola.IntegrationTests;
 
+[AllureParentSuite("Testes HTTP")]
+[AllureSuite("Autenticação JWT")]
 public sealed class AutenticacaoJwtHttpTests(EscolaApiFactory factory) : IClassFixture<EscolaApiFactory>
 {
     private const string RotaCalculo = "/resultados-academicos/calcular";

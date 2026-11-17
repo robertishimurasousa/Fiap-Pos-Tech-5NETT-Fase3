@@ -1,9 +1,12 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Allure.Net.Commons.Attributes;
 
 namespace Escola.IntegrationTests;
 
+[AllureParentSuite("Testes HTTP")]
+[AllureSuite("Resultado acadêmico")]
 public sealed class ResultadosAcademicosHttpTests(EscolaApiFactory factory) : IClassFixture<EscolaApiFactory>
 {
     private const string Rota = "/resultados-academicos/calcular";
