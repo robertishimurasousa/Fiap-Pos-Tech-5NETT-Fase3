@@ -5,5 +5,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       TZ: America/Sao_Paulo
       Escola__EnderecoLocal: "http://127.0.0.1:${ESCOLA_PORTA_LOCAL:-5080}"
+      Jwt__ChaveAssinatura: "${ESCOLA_JWT_CHAVE:?Configure ESCOLA_JWT_CHAVE no .env}"
+      Jwt__CodigoAcesso: "${ESCOLA_JWT_CODIGO:?Configure ESCOLA_JWT_CODIGO no .env}"
     ports:
       - "127.0.0.1:${ESCOLA_PORTA_LOCAL:-5080}:8080"

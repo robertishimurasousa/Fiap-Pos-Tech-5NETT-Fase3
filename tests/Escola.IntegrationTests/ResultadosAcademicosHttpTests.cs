@@ -1,12 +1,10 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Escola.IntegrationTests;
 
-public sealed class ResultadosAcademicosHttpTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
+public sealed class ResultadosAcademicosHttpTests(EscolaApiFactory factory) : IClassFixture<EscolaApiFactory>
 {
     private const string Rota = "/resultados-academicos/calcular";
 
@@ -26,6 +24,7 @@ public sealed class ResultadosAcademicosHttpTests(WebApplicationFactory<Program>
         string situacaoEsperada)
     {
         using var cliente = factory.CreateClient();
+        await factory.AutenticarAsync(cliente);
         using var corpo = new StringContent(entrada, Encoding.UTF8, "application/json");
         using var resposta = await cliente.PostAsync(Rota, corpo);
 
@@ -50,6 +49,7 @@ public sealed class ResultadosAcademicosHttpTests(WebApplicationFactory<Program>
         string campoInvalido)
     {
         using var cliente = factory.CreateClient();
+        await factory.AutenticarAsync(cliente);
         using var corpo = new StringContent(entrada, Encoding.UTF8, "application/json");
         using var resposta = await cliente.PostAsync(Rota, corpo);
 
