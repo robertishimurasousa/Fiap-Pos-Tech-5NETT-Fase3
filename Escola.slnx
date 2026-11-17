@@ -3,6 +3,7 @@
     <Project Path="src/Escola.Api/Escola.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Escola.IntegrationTests/Escola.IntegrationTests.csproj" />
     <Project Path="tests/Escola.UnitTests/Escola.UnitTests.csproj" />
   </Folder>
 </Solution>
