@@ -3,5 +3,7 @@ services:
     build: .
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      TZ: America/Sao_Paulo
+      Escola__EnderecoLocal: "http://127.0.0.1:${ESCOLA_PORTA_LOCAL:-5080}"
     ports:
-      - "127.0.0.1:5080:8080"
+      - "127.0.0.1:${ESCOLA_PORTA_LOCAL:-5080}:8080"

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
+const string rotaCalculo = "/resultados-academicos/calcular";
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ResultadoAcademicoService>();
@@ -33,9 +35,25 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference(options => options.WithTitle("Escola — API de Resultado Acadêmico"));
+
+    if (app.Configuration["Escola:EnderecoLocal"] is { Length: > 0 } enderecoLocal)
+    {
+        app.Lifetime.ApplicationStarted.Register(() =>
+            app.Logger.LogInformation(
+                """
+                API (POST): {UrlApi}
+                Scalar: {UrlScalar}
+                OpenAPI: {UrlOpenApi}
+                Iniciado em {Inicio:dd/MM/yyyy HH:mm:ss zzz}
+                """,
+                $"{enderecoLocal}{rotaCalculo}",
+                $"{enderecoLocal}/scalar/v1",
+                $"{enderecoLocal}/openapi/v1.json",
+                DateTimeOffset.Now));
+    }
 }
 
-app.MapPost("/resultados-academicos/calcular", CalcularResultadoAcademico)
+app.MapPost(rotaCalculo, CalcularResultadoAcademico)
     .WithName("CalcularResultadoAcademico")
     .WithTags("Resultados acadêmicos")
     .WithSummary("Calcula o resultado acadêmico a partir de duas notas")

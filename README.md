@@ -10,7 +10,9 @@ API ASP.NET Core em .NET 10 para calcular a média de duas provas e a situação
 docker compose up --build
 ```
 
-O Compose inicia a API em Development e publica a porta 5080 no endereço local `127.0.0.1`. Para remover o container e a rede da aplicação, execute `docker compose down`.
+O Compose inicia a API em Development e publica a porta 5080 no endereço local `127.0.0.1`. Os links da API, do Scalar e do OpenAPI aparecem nos logs junto com o horário de início em São Paulo.
+
+Para iniciar em outra porta, use `ESCOLA_PORTA_LOCAL=5081 docker compose up --build`. Para remover o container e a rede da aplicação, execute `docker compose down`.
 
 ### Com o SDK .NET
 
