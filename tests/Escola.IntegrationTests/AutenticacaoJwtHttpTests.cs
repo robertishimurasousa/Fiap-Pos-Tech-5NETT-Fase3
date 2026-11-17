@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
@@ -83,7 +82,7 @@ public sealed class AutenticacaoJwtHttpTests(EscolaApiFactory factory) : IClassF
     [Fact]
     public async Task Emissao_local_esta_ausente_em_production()
     {
-        using var production = factory.WithWebHostBuilder(builder => builder.UseEnvironment("Production"));
+        await using var production = factory.WithWebHostBuilder(builder => builder.UseEnvironment("Production"));
         using var client = production.CreateClient();
         using var tokenResponse = await client.PostAsJsonAsync(RotaToken, new { codigo = factory.CodigoAcesso });
         using var calculoResponse = await client.PostAsJsonAsync(RotaCalculo, new { nota1 = 6, nota2 = 8 });

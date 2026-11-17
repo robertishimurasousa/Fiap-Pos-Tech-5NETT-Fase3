@@ -34,12 +34,14 @@ public sealed class ResultadosAcademicosHttpTests(EscolaApiFactory factory) : IC
         using var resposta = await AllureApi.Step("Enviar POST de cálculo", () => cliente.PostAsync(Rota, corpo));
         var conteudo = await resposta.Content.ReadAsStringAsync();
         AllureApi.AddAttachment("Resposta do cálculo", "application/json", Encoding.UTF8.GetBytes(conteudo), ".json");
-        AllureApi.AddTestParameter("HTTP recebido", (int)resposta.StatusCode);
+        var statusCode = resposta.StatusCode;
+        var contentType = resposta.Content.Headers.ContentType?.MediaType;
+        AllureApi.AddTestParameter("HTTP recebido", (int)statusCode);
 
         AllureApi.Step("Conferir HTTP 200, média e situação", () =>
         {
-            Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
-            Assert.Equal("application/json", resposta.Content.Headers.ContentType?.MediaType);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+            Assert.Equal("application/json", contentType);
             using var json = JsonDocument.Parse(conteudo);
             Assert.Equal(mediaEsperada, json.RootElement.GetProperty("media").GetDecimal());
             Assert.Equal(situacaoEsperada, json.RootElement.GetProperty("situacao").GetString());
@@ -65,12 +67,14 @@ public sealed class ResultadosAcademicosHttpTests(EscolaApiFactory factory) : IC
         using var resposta = await AllureApi.Step("Enviar POST de cálculo", () => cliente.PostAsync(Rota, corpo));
         var conteudo = await resposta.Content.ReadAsStringAsync();
         AllureApi.AddAttachment("Problem Details", "application/json", Encoding.UTF8.GetBytes(conteudo), ".json");
-        AllureApi.AddTestParameter("HTTP recebido", (int)resposta.StatusCode);
+        var statusCode = resposta.StatusCode;
+        var contentType = resposta.Content.Headers.ContentType?.MediaType;
+        AllureApi.AddTestParameter("HTTP recebido", (int)statusCode);
 
         AllureApi.Step("Conferir HTTP 400 e campo inválido", () =>
         {
-            Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
-            Assert.Equal("application/problem+json", resposta.Content.Headers.ContentType?.MediaType);
+            Assert.Equal(HttpStatusCode.BadRequest, statusCode);
+            Assert.Equal("application/problem+json", contentType);
             using var json = JsonDocument.Parse(conteudo);
             Assert.Equal(400, json.RootElement.GetProperty("status").GetInt32());
             Assert.Contains(

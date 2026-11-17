@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
@@ -85,12 +86,20 @@ internal static class AutenticacaoJwt
 
 internal sealed class ConfiguracaoJwt
 {
+    // O binding de configuração preenche estas propriedades durante a inicialização.
+    [UsedImplicitly(ImplicitUseKindFlags.Assign)]
     public string ChaveAssinatura { get; init; } = string.Empty;
+    [UsedImplicitly(ImplicitUseKindFlags.Assign)]
     public string CodigoAcesso { get; init; } = string.Empty;
 
     internal SymmetricSecurityKey ObterChave() =>
         new(Encoding.UTF8.GetBytes(ChaveAssinatura));
 }
 
+// O JSON da requisição é desserializado pelo ASP.NET Core.
+[UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
 internal sealed record SolicitacaoToken(string? Codigo);
+
+// Os membros são lidos pelo serializador JSON da resposta.
+[UsedImplicitly(ImplicitUseKindFlags.Access, ImplicitUseTargetFlags.Members)]
 internal sealed record TokenJwt(string AccessToken, string TokenType, int ExpiresIn);

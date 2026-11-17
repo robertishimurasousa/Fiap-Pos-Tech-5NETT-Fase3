@@ -16,8 +16,8 @@ public sealed class InicializacaoHttpTests(EscolaApiFactory factory) : IClassFix
     [InlineData("http://127.0.0.1:5080")]
     public async Task Inicializacao_publica_documentacao_e_registra_links_quando_configurados(string endereco)
     {
-        using var logs = new CapturaLogs();
-        using var application = factory.WithWebHostBuilder(builder =>
+        var logs = new CapturaLogs();
+        await using var application = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureAppConfiguration((_, configuration) =>
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>

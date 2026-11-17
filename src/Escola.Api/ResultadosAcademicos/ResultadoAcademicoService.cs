@@ -17,7 +17,7 @@ public sealed class ResultadoAcademicoService
 
     private static decimal ValidarNota(decimal? nota, string parametro)
     {
-        if (nota is not decimal valor)
+        if (nota is not { } valor)
         {
             throw new ArgumentNullException(parametro, "A nota é obrigatória.");
         }

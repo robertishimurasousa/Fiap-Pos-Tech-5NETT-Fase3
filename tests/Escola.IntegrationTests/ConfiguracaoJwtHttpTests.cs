@@ -41,7 +41,7 @@ public sealed class ConfiguracaoJwtHttpTests(EscolaApiFactory factory) : IClassF
                 }));
         });
 
-        var error = Assert.Throws<OptionsValidationException>(() => application.CreateClient());
+        var error = Assert.Throws<OptionsValidationException>(application.CreateClient);
 
         Assert.Contains(error.Failures, failure => failure.Contains("Jwt:"));
     }
@@ -50,11 +50,11 @@ public sealed class ConfiguracaoJwtHttpTests(EscolaApiFactory factory) : IClassF
     public async Task Chave_utf8_com_32_bytes_e_codigo_com_32_caracteres_permitem_autenticacao()
     {
         var codigo = new string('c', 32);
-        using var application = factory.WithWebHostBuilder(builder =>
+        await using var application = factory.WithWebHostBuilder(builder =>
             builder.ConfigureAppConfiguration((_, configuration) =>
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Jwt:ChaveAssinatura"] = new string('é', 16),
+                    ["Jwt:ChaveAssinatura"] = new('é', 16),
                     ["Jwt:CodigoAcesso"] = codigo,
                 })));
         using var client = application.CreateClient();
@@ -73,7 +73,7 @@ public sealed class ConfiguracaoJwtHttpTests(EscolaApiFactory factory) : IClassF
     [Fact]
     public async Task Production_inicia_sem_codigo_de_emissao_local()
     {
-        using var application = factory.WithWebHostBuilder(builder =>
+        await using var application = factory.WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Production");
             builder.ConfigureAppConfiguration((_, configuration) =>

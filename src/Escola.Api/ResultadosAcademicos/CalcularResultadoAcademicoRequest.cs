@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using JetBrains.Annotations;
 
 namespace Escola.Api.ResultadosAcademicos;
 
+// O ASP.NET Core preenche as notas ao desserializar o corpo JSON.
+[UsedImplicitly(ImplicitUseKindFlags.Assign, ImplicitUseTargetFlags.Members)]
 internal sealed class CalcularResultadoAcademicoRequest
 {
     [Required]
