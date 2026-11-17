@@ -111,3 +111,86 @@ jobs:
 
       - name: Validar autenticação e cálculo no container
         run: python3 scripts/smoke-docker.py escola-api:smoke
+
+  postman:
+    name: Postman HTTP em Docker
+    if: ${{ github.actor != 'dependabot[bot]' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Instalar Postman CLI
+        run: |
+          curl --fail --silent --show-error --location \
+            https://dl-cli.pstmn.io/install/linux64.sh \
+            --output "$RUNNER_TEMP/install-postman.sh"
+          sh "$RUNNER_TEMP/install-postman.sh" --prefix "$RUNNER_TEMP/postman-cli" --no-modify-path
+          echo "$RUNNER_TEMP/postman-cli/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/postman-cli/bin/postman" --version
+
+      - name: Autenticar no Postman
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+        run: |
+          if [ -z "$POSTMAN_API_KEY" ]; then
+            echo '::error::Configure a secret POSTMAN_API_KEY no repositório.'
+            exit 1
+          fi
+          postman login --with-api-key "$POSTMAN_API_KEY"
+
+      - name: Compilar a imagem da API
+        run: docker build --tag escola-api:postman .
+
+      - name: Iniciar API isolada
+        run: |
+          signing_key="$(openssl rand -hex 32)"
+          access_code="$(openssl rand -hex 32)"
+          echo "::add-mask::$signing_key"
+          echo "::add-mask::$access_code"
+          echo "ESCOLA_JWT_CODIGO=$access_code" >> "$GITHUB_ENV"
+          Jwt__ChaveAssinatura="$signing_key" Jwt__CodigoAcesso="$access_code" \
+            docker run --detach --rm --name escola-postman \
+            --publish 127.0.0.1::8080 \
+            --env ASPNETCORE_ENVIRONMENT=Development \
+            --env Jwt__ChaveAssinatura --env Jwt__CodigoAcesso \
+            escola-api:postman
+          endpoint="$(docker port escola-postman 8080/tcp)"
+          echo "POSTMAN_BASE_URL=http://$endpoint" >> "$GITHUB_ENV"
+
+      - name: Aguardar a API
+        run: |
+          curl --fail --silent --show-error --retry 60 --retry-delay 1 \
+            --retry-connrefused --retry-all-errors --retry-max-time 60 --max-time 2 \
+            --output /dev/null "$POSTMAN_BASE_URL/openapi/v1.json"
+
+      - name: Executar coleção Postman
+        id: collection
+        run: |
+          postman collection run "60078620-d579e0b9-3f44-4d48-a484-810c24bf9880" \
+            --environment "60078620-0225f515-3651-4692-ab5b-7e32dadfc7bd" \
+            --env-var "baseUrl=$POSTMAN_BASE_URL" \
+            --env-var "codigoAcesso=$ESCOLA_JWT_CODIGO" \
+            --env-var 'accessToken=' \
+            --timeout-request 10000 --timeout-script 10000 --timeout 120000 \
+            --reporters cli,junit --reporter-cli-no-console \
+            --reporter-junit-export TestResults/postman/results.xml
+
+      - name: Publicar resultados Postman
+        if: ${{ !cancelled() && (steps.collection.outcome == 'success' || steps.collection.outcome == 'failure') }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relatorio-postman
+          path: TestResults/postman/results.xml
+          if-no-files-found: error
+
+      - name: Remover container de teste
+        if: ${{ always() }}
+        run: |
+          if docker container inspect escola-postman > /dev/null 2>&1; then
+            docker rm --force escola-postman > /dev/null
+          fi
