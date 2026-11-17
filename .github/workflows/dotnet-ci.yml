@@ -28,22 +28,49 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Restaurar e compilar
-        run: |
-          dotnet restore Escola.slnx
-          dotnet build Escola.slnx --configuration Release --no-restore -warnaserror
+      - name: Configurar Node.js para o Allure
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+
+      - name: Restaurar dependências
+        run: dotnet restore Escola.slnx
+
+      - name: Verificar formatação C#
+        run: dotnet format Escola.slnx --verify-no-changes --no-restore
+
+      - name: Compilar
+        id: build
+        run: dotnet build Escola.slnx --configuration Release --no-restore -warnaserror
 
       - name: Executar testes unitários
         run: |
           dotnet test tests/Escola.UnitTests/Escola.UnitTests.csproj \
             --configuration Release --no-build --collect 'XPlat Code Coverage' \
-            --results-directory TestResults/unit --logger 'trx;LogFileName=unit.trx'
+            --results-directory TestResults/unit --logger 'trx;LogFileName=unit.trx' \
+            -- xUnit.ReporterSwitch=allure
 
       - name: Executar testes HTTP
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           dotnet test tests/Escola.IntegrationTests/Escola.IntegrationTests.csproj \
             --configuration Release --no-build --collect 'XPlat Code Coverage' \
-            --results-directory TestResults/integration --logger 'trx;LogFileName=integration.trx'
+            --results-directory TestResults/integration --logger 'trx;LogFileName=integration.trx' \
+            -- xUnit.ReporterSwitch=allure
+
+      - name: Gerar relatório Allure
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npx --yes allure@3.33.0 generate --clean
+
+      - name: Publicar relatório e resultados Allure
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relatorio-allure
+          path: |
+            allure-report/
+            allure-results/
+          if-no-files-found: error
 
       - name: Gerar relatório consolidado
         run: |
@@ -67,3 +94,20 @@ jobs:
             TestResults/integration/integration.trx
             TestResults/integration/*/coverage.cobertura.xml
           if-no-files-found: error
+
+  container-smoke:
+    name: Smoke HTTP em Docker
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Compilar a imagem da API
+        run: docker build --tag escola-api:smoke .
+
+      - name: Validar autenticação e cálculo no container
+        run: python3 scripts/smoke-docker.py escola-api:smoke

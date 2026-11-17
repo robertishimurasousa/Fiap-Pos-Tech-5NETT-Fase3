@@ -1,0 +1,12 @@
+{
+  "name": "FIAP 5NETT — Fase 3",
+  "resultsDir": "allure-results",
+  "output": "allure-report",
+  "plugins": {
+    "awesome": {
+      "options": {
+        "singleFile": true
+      }
+    }
+  }
+}
