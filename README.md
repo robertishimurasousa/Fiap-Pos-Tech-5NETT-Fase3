@@ -2,8 +2,8 @@
 
 API de resultado acadêmico desenvolvida para o Tech Challenge da **Pós Tech em Arquitetura de Sistemas .NET com Azure — FIAP 5NETT**. A aplicação calcula a média de duas provas e informa a situação do aluno, com autenticação JWT, documentação interativa e evidências de qualidade no GitHub Actions.
 
-[![Testes e cobertura .NET](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml)
-[![Qodana](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/workflows/qodana_code_quality.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/workflows/qodana_code_quality.yml)
+[![Testes e cobertura .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml)
+[![Qodana](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/qodana_code_quality.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/qodana_code_quality.yml)
 
 [Arquitetura](#arquitetura) · [Executar localmente](#executar-localmente) · [Postman](#testar-no-postman) · [Testes](#executar-a-suíte) · [Relatórios e CI](#github-actions-e-evidência-para-a-fiap)
 
@@ -141,7 +141,7 @@ O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Esco
 
 ### Relatórios para baixar
 
-Abra uma execução em [Actions](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions) e consulte **Artifacts** no resumo:
+Abra uma execução em [Actions](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions) e consulte **Artifacts** no resumo:
 
 | Artefato | Conteúdo | Como consultar |
 | --- | --- | --- |
@@ -157,14 +157,14 @@ Os cenários HTTP de resultado acadêmico apresentam as etapas de autenticação
 
 ### Referência validada
 
-Resultados da revisão [`874ff1a`](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/commit/874ff1a44c771a7d8e054b0503fa21341f1f03ed), integrada em 17/11/2026:
+Resultados da revisão [`874ff1a`](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/commit/874ff1a44c771a7d8e054b0503fa21341f1f03ed), integrada em 17/11/2026:
 
 | Evidência | Resultado | Link |
 | --- | --- | --- |
-| xUnit | 48 testes aprovados: 12 unitários e 36 HTTP | [Execução .NET](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976) |
-| Cobertura | 100% das linhas e 97,5% das ramificações | [Download da cobertura](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976/artifacts/14370845741) |
-| Allure | Cenários, etapas e anexos dos testes | [Download do Allure](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976/artifacts/14370451618) |
-| Qodana | Zero apontamentos na análise executada | [Execução Qodana](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176087361) · [Download do relatório](https://github.com/robertishimurasousa/Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176087361/artifacts/14370860766) |
+| xUnit | 48 testes aprovados: 12 unitários e 36 HTTP | [Execução .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976) |
+| Cobertura | 100% das linhas e 97,5% das ramificações | [Download da cobertura](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976/artifacts/14370845741) |
+| Allure | Cenários, etapas e anexos dos testes | [Download do Allure](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976/artifacts/14370451618) |
+| Qodana | Zero apontamentos na análise executada | [Execução Qodana](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176087361) · [Download do relatório](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176087361/artifacts/14370860766) |
 
 Os números são uma fotografia dessa revisão. Para alterações posteriores, consulte a execução correspondente. Os downloads do GitHub Actions exigem login e permanecem disponíveis durante a retenção dos artefatos.
 
