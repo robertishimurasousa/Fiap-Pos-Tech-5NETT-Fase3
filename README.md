@@ -137,7 +137,7 @@ Os testes configuram as próprias credenciais de demonstração. A suíte usa **
 
 O workflow [**Testes e cobertura .NET**](.github/workflows/dotnet-ci.yml) verifica a formatação C#, compila com warnings tratados como erros e executa as suítes xUnit unitária e HTTP. O job separado de Docker compila a imagem e verifica a resposta `401` sem token e o cálculo autenticado com resposta `200`, média `7` e situação `Aprovado`.
 
-O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Escola.slnx` com o linter Community para .NET. Ambos podem ser acionados por pushes em `main` ou `codex/**`, por pull requests e manualmente. O Qodana também acompanha `releases/*` e envia a análise ao projeto configurado no Qodana Cloud.
+O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Escola.slnx` com o linter Community para .NET. Ambos podem ser acionados por pushes em `main` ou `rob-*`, por pull requests e manualmente. As branches de trabalho seguem o identificador e o assunto da issue, como `rob-14-padronizacao-branches`. O Qodana também acompanha `releases/*` e envia a análise ao projeto configurado no Qodana Cloud.
 
 ### Relatórios para baixar
 
