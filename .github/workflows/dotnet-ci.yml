@@ -28,10 +28,14 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Restaurar e compilar
-        run: |
-          dotnet restore Escola.slnx
-          dotnet build Escola.slnx --configuration Release --no-restore -warnaserror
+      - name: Restaurar dependências
+        run: dotnet restore Escola.slnx
+
+      - name: Verificar formatação C#
+        run: dotnet format Escola.slnx --verify-no-changes --no-restore
+
+      - name: Compilar
+        run: dotnet build Escola.slnx --configuration Release --no-restore -warnaserror
 
       - name: Executar testes unitários
         run: |
@@ -67,3 +71,20 @@ jobs:
             TestResults/integration/integration.trx
             TestResults/integration/*/coverage.cobertura.xml
           if-no-files-found: error
+
+  container-smoke:
+    name: Smoke HTTP em Docker
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Compilar a imagem da API
+        run: docker build --tag escola-api:smoke .
+
+      - name: Validar autenticação e cálculo no container
+        run: python3 scripts/smoke-docker.py escola-api:smoke
