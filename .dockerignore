@@ -1,0 +1,16 @@
+.dockerignore
+Dockerfile
+.git/
+.github/
+.vs/
+.vscode/
+.env
+.env.*
+**/bin/
+**/obj/
+**/node_modules/
+**/TestResults/
+**/.DS_Store
+**/Thumbs.db
+**/*.user
+**/*.suo

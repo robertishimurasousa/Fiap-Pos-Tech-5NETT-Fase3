@@ -4,6 +4,18 @@ API ASP.NET Core em .NET 10 para calcular a média de duas provas e a situação
 
 ## Executar localmente
 
+### Com Docker Compose
+
+```sh
+docker compose up --build
+```
+
+O Compose inicia a API em Development e publica a porta 5080 no endereço local `127.0.0.1`. Para remover o container e a rede da aplicação, execute `docker compose down`.
+
+### Com o SDK .NET
+
+As duas opções usam a porta 5080. Encerre a primeira execução antes de iniciar a outra.
+
 ```sh
 ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/Escola.Api -- --urls http://127.0.0.1:5080
 ```
