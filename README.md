@@ -23,7 +23,15 @@ O recorte é um serviço síncrono, sem persistência ou dependências externas 
 
 O workflow de testes executa dois jobs em paralelo: testes .NET com relatórios e smoke HTTP da API em Docker. O Qodana possui um workflow próprio para análise estática. Os resultados ficam associados à revisão executada no GitHub.
 
-As imagens são exportações do [quadro editável no Whimsical](https://whimsical.com/9EyCCdUp52DCkLSi74foeV), que também preserva a tabela de cenários da regra de negócio. O acesso ao quadro depende de permissão no Whimsical; as imagens podem ser consultadas diretamente neste repositório.
+### Cenários de negócio
+
+![Painel branco com oito exemplos de aprovação, reprovação, limites e notas inválidas, além dos destaques de média, aprovação e validação de entrada.](docs/images/cenarios-negocio.png)
+
+A tabela reúne exemplos cobertos pelos testes da regra de cálculo. O painel destaca a média sem arredondamento, a aprovação a partir de 7 e a obrigatoriedade de duas notas entre 0 e 10.
+
+As três imagens são exportações do [quadro editável no Whimsical](https://whimsical.com/9EyCCdUp52DCkLSi74foeV). O acesso ao quadro depende de permissão no Whimsical; as imagens podem ser consultadas diretamente neste repositório.
+
+Arquivos individuais para documentos ou apresentações: [API](docs/images/fluxo-api.png) · [Qualidade contínua](docs/images/fluxo-ci.png) · [Cenários de negócio](docs/images/cenarios-negocio.png).
 
 ## Regra de negócio e contrato HTTP
 
