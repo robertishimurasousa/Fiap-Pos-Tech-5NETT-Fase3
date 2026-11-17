@@ -21,7 +21,7 @@ O recorte é um serviço síncrono, sem persistência ou dependências externas 
 
 ![Fluxo do GitHub Actions com testes xUnit e cobertura, relatórios Allure, smoke HTTP no Docker e análise Qodana em paralelo, antes da revisão e do merge.](docs/images/fluxo-ci.png)
 
-O workflow de testes executa dois jobs em paralelo: testes .NET com relatórios e smoke HTTP da API em Docker. O Qodana possui um workflow próprio para análise estática. Os resultados ficam associados à revisão executada no GitHub.
+Além dos jobs de testes .NET e smoke Docker ilustrados, o workflow executa a coleção Postman contra uma API Docker isolada. Os três jobs rodam em paralelo. O Qodana possui um workflow próprio para análise estática. Os resultados ficam associados à revisão executada no GitHub.
 
 ### Cenários de negócio
 
@@ -146,6 +146,14 @@ Os testes configuram as próprias credenciais de demonstração. A suíte usa **
 O workflow [**Testes e cobertura .NET**](.github/workflows/dotnet-ci.yml) verifica a formatação C#, compila com warnings tratados como erros e executa as suítes xUnit unitária e HTTP. O job separado de Docker compila a imagem e verifica a resposta `401` sem token e o cálculo autenticado com resposta `200`, média `7` e situação `Aprovado`.
 
 O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Escola.slnx` com o linter Community para .NET. Ambos podem ser acionados por pushes em `main` ou `rob-*`, por pull requests e manualmente. As branches temporárias seguem o padrão `rob-<número>-<assunto>`. O Qodana também acompanha `releases/*` e envia a análise ao projeto configurado no Qodana Cloud. O resultado SARIF público pode ser consultado sem acesso ao Cloud.
+
+### Coleção Postman na CI
+
+O job **Postman HTTP em Docker** instala o Postman CLI e autentica com a secret de repositório `POSTMAN_API_KEY`. Executa a coleção e o ambiente salvos no Postman, pelos IDs configurados no workflow. A URL, o código de demonstração e o token inicial são sobrescritos apenas para a execução; o ambiente salvo permanece intacto. A API usa uma porta de loopback disponível e credenciais temporárias, e o container é removido ao terminar.
+
+A coleção obtém o JWT e o reutiliza nos cálculos. Seus oito cenários verificam aprovação, reprovação, entradas inválidas e autenticação. Falhas de asserção reprovam o job. O resultado é enviado ao Postman, e o artefato **relatorio-postman** disponibiliza `results.xml` no formato JUnit no Actions, inclusive quando há falha de teste.
+
+O job roda em pushes e PRs do próprio repositório. PRs de forks e do Dependabot não executam esse job, pois não recebem a secret. O runner manual `postman/run.py` continua usando os arquivos versionados; a CI usa a versão da coleção salva no Postman. Mudanças nessa coleção podem alterar os testes executados pela CI.
 
 ### Relatórios para baixar
 
