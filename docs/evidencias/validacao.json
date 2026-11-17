@@ -1,0 +1,49 @@
+{
+  "revisao": "9d419c7cf6f1b443e2151e6986b4987c30346b0b",
+  "branch": "main",
+  "testes": {
+    "unitarios": 12,
+    "http": 36,
+    "total": 48,
+    "aprovados": 48,
+    "falhas": 0,
+    "ignorados": 0
+  },
+  "cobertura": {
+    "linhasCobertas": 159,
+    "linhasTotais": 159,
+    "percentualLinhas": 100,
+    "ramosCobertos": 39,
+    "ramosTotais": 40,
+    "percentualRamos": 97.5
+  },
+  "qodana": {
+    "resultadosSarif": 0,
+    "arquivo": "qodana.sarif.json",
+    "sarifSha256": "aa01e56821d679757114dfd9a897f1294e1bb00a5a43305dd16d80b4b71217af"
+  },
+  "origem": {
+    "ciRun": 44192630024,
+    "qodanaRun": 44192630061,
+    "artefatos": {
+      "cobertura-dotnet": 14376234800,
+      "relatorio-allure": 14377057712,
+      "qodana-report": 14378196104
+    }
+  },
+  "pacotes": {
+    "cobertura-dotnet.zip": {
+      "sha256": "b2c78a311771c7ed6644bb26291b3e1c908573667e8ea8b65b02a3c26ff8bec5",
+      "bytes": 220888
+    },
+    "relatorio-allure.zip": {
+      "sha256": "c9faf449491ea17a9bbfa00c1a8a86927abd3b6165fb100bd66a41ad3534eede",
+      "bytes": 1191431
+    },
+    "qodana-sarif.zip": {
+      "sha256": "c537f103ea05fc15d076c3bcc1bd260969c9004b8d9af87093b92cfada1df213",
+      "bytes": 986
+    }
+  },
+  "observacao": "Pacotes de arquivos originais dos artefatos da revisão identificada. Qodana inclui somente o SARIF curto original. Os downloads públicos são cópias organizadas, sem modificar resultados."
+}
