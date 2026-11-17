@@ -1,5 +1,5 @@
 {
-  "revisao": "9d419c7cf6f1b443e2151e6986b4987c30346b0b",
+  "revisao": "090277915f3073c18c8e62e1c8c3aa0e7e34f955",
   "branch": "main",
   "testes": {
     "unitarios": 12,
@@ -8,6 +8,13 @@
     "aprovados": 48,
     "falhas": 0,
     "ignorados": 0
+  },
+  "postman": {
+    "requisicoes": 8,
+    "assercoes": 17,
+    "falhas": 0,
+    "arquivo": "results.xml",
+    "junitSha256": "0a1859f249c19bb5b46f901c73de225cf8b8ade9e9f4352b25795950a913af3f"
   },
   "cobertura": {
     "linhasCobertas": 159,
@@ -20,30 +27,35 @@
   "qodana": {
     "resultadosSarif": 0,
     "arquivo": "qodana.sarif.json",
-    "sarifSha256": "aa01e56821d679757114dfd9a897f1294e1bb00a5a43305dd16d80b4b71217af"
+    "sarifSha256": "f6d019a57ef41b660c4c8e0bda410e6a306147f1e6a8e063bdb2f54939e67da4"
   },
   "origem": {
-    "ciRun": 44192630024,
-    "qodanaRun": 44192630061,
+    "ciRun": 44197991680,
+    "qodanaRun": 44197991803,
     "artefatos": {
-      "cobertura-dotnet": 14376234800,
-      "relatorio-allure": 14377057712,
-      "qodana-report": 14378196104
+      "cobertura-dotnet": 14380675670,
+      "relatorio-allure": 14379886868,
+      "relatorio-postman": 14380880064,
+      "qodana-report": 14380271832
     }
   },
   "pacotes": {
     "cobertura-dotnet.zip": {
-      "sha256": "b2c78a311771c7ed6644bb26291b3e1c908573667e8ea8b65b02a3c26ff8bec5",
-      "bytes": 220888
-    },
-    "relatorio-allure.zip": {
-      "sha256": "c9faf449491ea17a9bbfa00c1a8a86927abd3b6165fb100bd66a41ad3534eede",
-      "bytes": 1191431
+      "sha256": "e0f9df9edb4bb54c87d2318c7eabe3d21ed19506d799fd0957abe02f8ab4c490",
+      "bytes": 220759
     },
     "qodana-sarif.zip": {
-      "sha256": "c537f103ea05fc15d076c3bcc1bd260969c9004b8d9af87093b92cfada1df213",
-      "bytes": 986
+      "sha256": "d13cecf58623bf05f2bab150b0777a2a3e947c67e8f974027110918470e592b3",
+      "bytes": 990
+    },
+    "relatorio-allure.zip": {
+      "sha256": "9ed3a459c89f7f7fb5271a0b3488c6b677ac9985696420d97f6771f01bf430d3",
+      "bytes": 1191921
+    },
+    "relatorio-postman.zip": {
+      "sha256": "cb772d21f697f02254a00ba00902b9c2e53ab92313cf896f2b9ae5a503885e8a",
+      "bytes": 1028
     }
   },
-  "observacao": "Pacotes de arquivos originais dos artefatos da revisão identificada. Qodana inclui somente o SARIF curto original. Os downloads públicos são cópias organizadas, sem modificar resultados."
+  "observacao": "Fotografia dos relatórios originais da revisão identificada, incluindo o JUnit Postman. Qodana contém somente o SARIF curto original. Pacotes reorganizados sem modificar resultados."
 }
