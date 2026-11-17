@@ -71,3 +71,14 @@ O runner lê o código do `.env`, monta um ambiente temporário para o endereço
 ```sh
 dotnet test Escola.slnx --configuration Release
 ```
+
+## GitHub Actions e evidência para a FIAP
+
+O workflow **Testes e cobertura .NET** executa as suítes xUnit unitária e HTTP. O resumo da execução mostra a cobertura consolidada. Em **Artifacts**, baixe **cobertura-dotnet** para consultar o HTML (`coverage/index.html`), o XML Cobertura e os resultados TRX.
+
+Para gravar o vídeo da atividade:
+
+1. Mostre a API .NET e o cálculo de resultado acadêmico.
+2. Mostre os testes unitários de aprovação, reprovação e notas inválidas.
+3. Abra a execução do workflow em **Actions** e mostre a etapa dos testes unitários com o resultado aprovado.
+4. Na mesma execução, baixe **cobertura-dotnet** e abra o relatório HTML. Mostre as linhas e ramificações cobertas.
