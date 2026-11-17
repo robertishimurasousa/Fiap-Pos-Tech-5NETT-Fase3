@@ -1,0 +1,370 @@
+{
+  "info": {
+    "name": "FIAP 5NETT — Fase 3",
+    "description": "Fluxo local de autenticação JWT e cálculo do resultado acadêmico. Selecione o ambiente FIAP 5NETT — Local e execute Obter token antes das requisições protegidas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Obter token JWT",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set('accessToken', '');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Código válido recebe 200\", () => pm.response.to.have.status(200));",
+              "",
+              "if (pm.response.code === 200) {",
+              "    const resposta = pm.response.json();",
+              "    pm.test('O token é Bearer e vale 15 minutos', () => {",
+              "        pm.expect(resposta.tokenType).to.equal('Bearer');",
+              "        pm.expect(resposta.expiresIn).to.equal(900);",
+              "    });",
+            "    const temJwt = typeof resposta.accessToken === 'string' && resposta.accessToken.split('.').length === 3;",
+            "    pm.test('A resposta contém um JWT', () => pm.expect(temJwt).to.be.true);",
+            "    if (temJwt) {",
+            "        pm.environment.set('accessToken', resposta.accessToken);",
+            "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigo\": \"{{codigoAcesso}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/auth/token"
+      }
+    },
+    {
+      "name": "Calcular — aprovação no limite",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Notas válidas recebem 200\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test('A resposta contém a média e a situação esperadas', () => {",
+              "    const resultado = pm.response.json();",
+              "    pm.expect(resultado.media).to.equal(7);",
+              "    pm.expect(resultado.situacao).to.equal('Aprovado');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nota1\": 6,\n  \"nota2\": 8\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resultados-academicos/calcular"
+      }
+    },
+    {
+      "name": "Calcular — reprovação sem arredondamento",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Reprovação recebe 200\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test('A resposta contém a média e a situação esperadas', () => {",
+              "    const resultado = pm.response.json();",
+              "    pm.expect(resultado.media).to.equal(6.995);",
+              "    pm.expect(resultado.situacao).to.equal('Reprovado');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nota1\": 6.99,\n  \"nota2\": 7\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resultados-academicos/calcular"
+      }
+    },
+    {
+      "name": "Calcular — nota obrigatória ausente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Nota ausente recebe 400\", () => pm.response.to.have.status(400));",
+              "",
+              "pm.test('Problem Details identifica a nota inválida', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/problem+json');",
+              "    const problema = pm.response.json();",
+              "    pm.expect(problema.status).to.equal(400);",
+              "    pm.expect(problema.errors.nota2).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nota1\": 8\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resultados-academicos/calcular"
+      }
+    },
+    {
+      "name": "Calcular — nota fora da faixa",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Nota fora da faixa recebe 400\", () => pm.response.to.have.status(400));",
+              "",
+              "pm.test('Problem Details identifica a nota inválida', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/problem+json');",
+              "    const problema = pm.response.json();",
+              "    pm.expect(problema.status).to.equal(400);",
+              "    pm.expect(problema.errors.nota1).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nota1\": 10.01,\n  \"nota2\": 8\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resultados-academicos/calcular"
+      }
+    },
+    {
+      "name": "Calcular — sem token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Sem token recebe 401\", () => pm.response.to.have.status(401));",
+              "",
+              "pm.test('A API solicita autenticação Bearer', () => {",
+              "    pm.expect(pm.response.headers.get('WWW-Authenticate')).to.match(/^Bearer\\b/i);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nota1\": 6,\n  \"nota2\": 8\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resultados-academicos/calcular"
+      }
+    },
+    {
+      "name": "Calcular — token inválido",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Token inválido recebe 401\", () => pm.response.to.have.status(401));",
+              "",
+              "pm.test('A API solicita autenticação Bearer', () => {",
+              "    pm.expect(pm.response.headers.get('WWW-Authenticate')).to.match(/^Bearer\\b/i);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "token-invalido",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nota1\": 6,\n  \"nota2\": 8\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resultados-academicos/calcular"
+      }
+    },
+    {
+      "name": "Obter token — código incorreto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Código incorreto recebe 401\", () => pm.response.to.have.status(401));",
+              "",
+              "pm.test('O erro não devolve token', () => {",
+            "    pm.expect(pm.response.text().length).to.equal(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigo\": \"codigo-incorreto\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/auth/token"
+      }
+    }
+  ]
+}
