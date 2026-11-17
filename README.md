@@ -29,7 +29,7 @@ O workflow de testes executa dois jobs em paralelo: testes .NET com relatórios 
 
 A tabela reúne exemplos cobertos pelos testes da regra de cálculo. O painel destaca a média sem arredondamento, a aprovação a partir de 7 e a obrigatoriedade de duas notas entre 0 e 10.
 
-As três imagens são exportações do [quadro editável no Whimsical](https://whimsical.com/9EyCCdUp52DCkLSi74foeV). O acesso ao quadro depende de permissão no Whimsical; as imagens podem ser consultadas diretamente neste repositório.
+As três imagens são exportações do desenho de arquitetura e podem ser consultadas neste repositório, sem acesso a ferramentas externas.
 
 Arquivos individuais para documentos ou apresentações: [API](docs/images/fluxo-api.png) · [Qualidade contínua](docs/images/fluxo-ci.png) · [Cenários de negócio](docs/images/cenarios-negocio.png).
 
@@ -94,7 +94,7 @@ ASPNETCORE_ENVIRONMENT=Development \
   dotnet run --project src/Escola.Api -- --urls http://127.0.0.1:5080
 ```
 
-Em Development, abra o [Scalar](http://127.0.0.1:5080/scalar/v1) para consultar e testar a operação. O [documento OpenAPI](http://127.0.0.1:5080/openapi/v1.json) também está disponível.
+Após iniciar a API em Development, abra `http://127.0.0.1:5080/scalar/v1` para consultar e testar a operação. O documento OpenAPI fica em `http://127.0.0.1:5080/openapi/v1.json`. Esses endereços funcionam na máquina em que a API está rodando.
 
 ### Autenticar e calcular
 
@@ -145,17 +145,21 @@ Os testes configuram as próprias credenciais de demonstração. A suíte usa **
 
 O workflow [**Testes e cobertura .NET**](.github/workflows/dotnet-ci.yml) verifica a formatação C#, compila com warnings tratados como erros e executa as suítes xUnit unitária e HTTP. O job separado de Docker compila a imagem e verifica a resposta `401` sem token e o cálculo autenticado com resposta `200`, média `7` e situação `Aprovado`.
 
-O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Escola.slnx` com o linter Community para .NET. Ambos podem ser acionados por pushes em `main` ou `rob-*`, por pull requests e manualmente. As branches de trabalho seguem o identificador e o assunto da issue, como `rob-14-padronizacao-branches`. O Qodana também acompanha `releases/*` e envia a análise ao projeto configurado no Qodana Cloud.
+O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Escola.slnx` com o linter Community para .NET. Ambos podem ser acionados por pushes em `main` ou `rob-*`, por pull requests e manualmente. As branches temporárias seguem o padrão `rob-<número>-<assunto>`. O Qodana também acompanha `releases/*` e envia a análise ao projeto configurado no Qodana Cloud. O resultado SARIF público pode ser consultado sem acesso ao Cloud.
 
 ### Relatórios para baixar
 
-Abra uma execução em [Actions](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions) e consulte **Artifacts** no resumo:
+A [release de evidências públicas](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/tag/evidencias-fase3-v1) oferece os relatórios da revisão identificada abaixo para **download sem login**:
 
-| Artefato | Conteúdo | Como consultar |
+| Download público | Conteúdo | Como consultar |
 | --- | --- | --- |
-| `cobertura-dotnet` | HTML consolidado, XML Cobertura e resultados TRX | Extraia o ZIP e abra `coverage/index.html` |
-| `relatorio-allure` | Relatório navegável e resultados JSON dos testes | Extraia o ZIP e abra `allure-report/index.html` |
-| `qodana-report` | Resultado da análise estática, SARIF e logs | Baixe na execução do workflow Qodana ou consulte o Qodana Cloud |
+| [cobertura-dotnet.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v1/cobertura-dotnet.zip) | HTML consolidado, XML Cobertura e resultados TRX | Extraia o ZIP e abra `coverage/index.html` |
+| [relatorio-allure.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v1/relatorio-allure.zip) | Relatório navegável e resultados JSON dos testes | Extraia o ZIP e abra `allure-report/index.html` |
+| [qodana-sarif.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v1/qodana-sarif.zip) | SARIF curto original da análise estática | Extraia e consulte `qodana.sarif.json`; `runs[].results` contém os apontamentos |
+
+O [resumo versionado](docs/evidencias/validacao.json) registra a revisão, execuções de origem, contagens e hashes dos pacotes. Para conferir a integridade, baixe também [validacao.json](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v1/validacao.json) e [SHA256SUMS.txt](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v1/SHA256SUMS.txt) na mesma pasta dos ZIPs e execute `shasum -a 256 -c SHA256SUMS.txt` no macOS ou `sha256sum -c SHA256SUMS.txt` no Linux.
+
+Cada execução em [Actions](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions) continua publicando **Artifacts**: `cobertura-dotnet` e `relatorio-allure` no workflow .NET e `qodana-report` no workflow Qodana. Esses downloads da pipeline exigem login no GitHub e estão sujeitos à retenção. A release preserva uma cópia pública dos arquivos de cobertura e Allure e do SARIF curto original do Qodana, sem alterar os resultados.
 
 O resumo da execução .NET também mostra a cobertura consolidada. Os logs do job **Smoke HTTP em Docker** registram a verificação da API no container.
 
@@ -165,16 +169,16 @@ Os cenários HTTP de resultado acadêmico apresentam as etapas de autenticação
 
 ### Referência validada
 
-Resultados da revisão [`874ff1a`](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/commit/874ff1a44c771a7d8e054b0503fa21341f1f03ed), integrada em 17/11/2026:
+Resultados da revisão [`9d419c7`](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/commit/9d419c7cf6f1b443e2151e6986b4987c30346b0b), executada em `main` em 17/11/2026:
 
 | Evidência | Resultado | Link |
 | --- | --- | --- |
-| xUnit | 48 testes aprovados: 12 unitários e 36 HTTP | [Execução .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976) |
-| Cobertura | 100% das linhas e 97,5% das ramificações | [Download da cobertura](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976/artifacts/14370845741) |
-| Allure | Cenários, etapas e anexos dos testes | [Download do Allure](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176086976/artifacts/14370451618) |
-| Qodana | Zero apontamentos na análise executada | [Execução Qodana](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176087361) · [Download do relatório](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44176087361/artifacts/14370860766) |
+| xUnit | 48 testes aprovados: 12 unitários e 36 HTTP; nenhum ignorado | [Execução .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44192630024) |
+| Cobertura | 159/159 linhas (100%) e 39/40 ramificações (97,5%) | [Download público da cobertura](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v1/cobertura-dotnet.zip) |
+| Allure | 48 resultados aprovados, com cenários, etapas e anexos | [Download público do Allure](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v1/relatorio-allure.zip) |
+| Qodana | Zero apontamentos no SARIF da análise executada | [Execução Qodana](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44192630061) · [SARIF público](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v1/qodana-sarif.zip) |
 
-Os números são uma fotografia dessa revisão. Para alterações posteriores, consulte a execução correspondente. Os downloads do GitHub Actions exigem login e permanecem disponíveis durante a retenção dos artefatos.
+Os números e os downloads da release são uma fotografia dessa revisão. Para alterações posteriores, consulte a execução correspondente. As evidências usam um commit identificado e permanecem consultáveis após a exclusão das branches temporárias.
 
 ### Gerar o Allure localmente
 
@@ -200,16 +204,17 @@ tests/
 postman/                  Coleção, ambiente e runner local
 scripts/                  Smoke HTTP da API no Docker
 docs/images/              Exportações dos fluxos do Whimsical
+docs/evidencias/          Resumo e origem dos relatórios públicos
 .github/workflows/        Testes, cobertura, Allure, Docker e Qodana
 ```
 
 ## Demonstração em vídeo
 
-O [roteiro e o acompanhamento da gravação estão na ROB-9](https://linear.app/deltaedgeai/issue/ROB-9), no Linear. A demonstração segue esta sequência:
+A demonstração segue esta sequência e pode ser acompanhada com o conteúdo público deste repositório:
 
 1. Apresente o fluxo da API e a regra de resultado acadêmico.
 2. No Postman, obtenha o token e execute os cenários de aprovação, reprovação, notas inválidas e acesso sem token.
 3. Mostre os testes unitários e HTTP e a execução aprovada no GitHub Actions, incluindo o smoke em Docker.
-4. Baixe a cobertura e apresente as linhas e ramificações cobertas.
+4. Baixe a cobertura e apresente as linhas e ramificações cobertas. Na gravação, mostre o artefato da execução do Actions; para quem assiste sem login, os mesmos dados estão na release pública.
 5. Abra o Allure para mostrar os cenários, as etapas e os anexos. Apresente também a análise do Qodana.
 6. Conecte a separação de responsabilidades, a testabilidade e a execução em container ao conteúdo da Fase 3.
