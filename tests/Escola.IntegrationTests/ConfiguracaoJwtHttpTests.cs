@@ -2,7 +2,10 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using Allure.Net.Commons.Attributes;
+using Escola.Api.Autenticacao;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -27,21 +30,23 @@ public sealed class ConfiguracaoJwtHttpTests(EscolaApiFactory factory) : IClassF
 
     [Theory]
     [MemberData(nameof(ConfiguracoesInvalidas))]
-    public void Configuracao_invalida_impede_inicializacao(
+    public async Task Configuracao_invalida_impede_inicializacao(
         string ambiente, string? chave, string? codigo)
     {
-        using var application = factory.WithWebHostBuilder(builder =>
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
-            builder.UseEnvironment(ambiente);
-            builder.ConfigureAppConfiguration((_, configuration) =>
-                configuration.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Jwt:ChaveAssinatura"] = chave,
-                    ["Jwt:CodigoAcesso"] = codigo,
-                }));
+            EnvironmentName = ambiente,
         });
+        builder.WebHost.UseTestServer();
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Jwt:ChaveAssinatura"] = chave,
+            ["Jwt:CodigoAcesso"] = codigo,
+        });
+        builder.AdicionarAutenticacaoJwt();
+        await using var application = builder.Build();
 
-        var error = Assert.Throws<OptionsValidationException>(application.CreateClient);
+        var error = await Assert.ThrowsAsync<OptionsValidationException>(() => application.StartAsync());
 
         Assert.Contains(error.Failures, failure => failure.Contains("Jwt:"));
     }
