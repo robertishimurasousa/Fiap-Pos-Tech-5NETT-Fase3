@@ -2,7 +2,7 @@
 
 API de resultado acadêmico desenvolvida para o Tech Challenge da **Pós Tech em Arquitetura de Sistemas .NET com Azure — FIAP 5NETT**. A aplicação calcula a média de duas provas e informa a situação do aluno, com autenticação JWT, documentação interativa e evidências de qualidade no GitHub Actions.
 
-[![Testes e cobertura .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml)
+[![Testes e cobertura .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/actions/workflows/dotnet-ci.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/actions/workflows/dotnet-ci.yml)
 
 [Arquitetura](#arquitetura) · [Executar localmente](#executar-localmente) · [Postman](#testar-no-postman) · [Testes](#executar-a-suíte) · [Relatórios e CI](#github-actions-e-evidência-para-a-fiap) · [Licença](#licença)
 
@@ -162,6 +162,8 @@ O job roda em pushes e PRs do próprio repositório. PRs de forks e do Dependabo
 
 Após o merge, o push na `main` executa xUnit/cobertura, smoke Docker, Postman e Qodana. Somente após os quatro jobs aprovarem, **Publicar imagem no GHCR** constrói a imagem, executa o smoke, publica e repete o smoke usando o digest baixado do registro. Pull requests e branches de trabalho não publicam imagens.
 
+O endereço da imagem conserva o nome da publicação inicial para manter os comandos de download e as revisões já publicadas. A CI usa essa referência estável mesmo após a renomeação do repositório para `Fiap-Pos-Tech-5NETT-Fase3`.
+
 O pacote fica associado a este repositório em **Packages**, com a referência `ghcr.io/robertishimurasousa/fiap-pos-tech-dotnet-azure-fase3`:
 
 | Referência | Uso |
@@ -172,7 +174,7 @@ O pacote fica associado a este repositório em **Packages**, com a referência `
 
 O resumo do job e o artefato **imagem-ghcr/image.json** registram as referências, revisão, plataforma e atualização da tag `main`. A plataforma publicada é **linux/amd64**; no Docker Desktop com Apple Silicon, os comandos abaixo usam essa plataforma por emulação.
 
-A publicação usa `GITHUB_TOKEN`, com `packages: write` apenas no job responsável. Nenhuma credencial da API é incluída na imagem. O [pacote deste projeto](https://github.com/users/robertishimurasousa/packages/container/package/fiap-pos-tech-dotnet-azure-fase3) está **público** e pode ser baixado sem login:
+A publicação usa `GITHUB_TOKEN`, com `packages: write` apenas no job responsável. Nenhuma credencial da API é incluída na imagem. O [pacote deste projeto](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/pkgs/container/fiap-pos-tech-dotnet-azure-fase3) está **público** e pode ser baixado sem login:
 
 ```sh
 docker pull --platform linux/amd64 ghcr.io/robertishimurasousa/fiap-pos-tech-dotnet-azure-fase3:main
@@ -194,18 +196,18 @@ As configurações e os endpoints do Postman continuam iguais. Para repetir uma 
 
 ### Relatórios para baixar
 
-A [release de evidências públicas](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/tag/evidencias-fase3-v2) oferece os relatórios da revisão identificada abaixo para **download sem login**:
+A [release de evidências públicas](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/tag/evidencias-fase3-v2) oferece os relatórios da revisão identificada abaixo para **download sem login**:
 
 | Download público | Conteúdo | Como consultar |
 | --- | --- | --- |
-| [cobertura-dotnet.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/cobertura-dotnet.zip) | HTML consolidado, XML Cobertura e resultados TRX | Extraia o ZIP e abra `coverage/index.html` |
-| [relatorio-allure.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/relatorio-allure.zip) | Relatório navegável e resultados JSON dos testes | Extraia o ZIP e abra `allure-report/index.html` |
-| [relatorio-postman.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/relatorio-postman.zip) | Oito requisições e 17 asserções no formato JUnit | Extraia o ZIP e consulte `results.xml` em um editor ou leitor JUnit |
-| [qodana-sarif.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/qodana-sarif.zip) | SARIF curto original da análise estática | Extraia e consulte `qodana.sarif.json`; `runs[].results` contém os apontamentos |
+| [cobertura-dotnet.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/cobertura-dotnet.zip) | HTML consolidado, XML Cobertura e resultados TRX | Extraia o ZIP e abra `coverage/index.html` |
+| [relatorio-allure.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/relatorio-allure.zip) | Relatório navegável e resultados JSON dos testes | Extraia o ZIP e abra `allure-report/index.html` |
+| [relatorio-postman.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/relatorio-postman.zip) | Oito requisições e 17 asserções no formato JUnit | Extraia o ZIP e consulte `results.xml` em um editor ou leitor JUnit |
+| [qodana-sarif.zip](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/qodana-sarif.zip) | SARIF curto original da análise estática | Extraia e consulte `qodana.sarif.json`; `runs[].results` contém os apontamentos |
 
-O [resumo versionado](docs/evidencias/validacao.json) registra a revisão, execuções de origem, contagens e hashes dos pacotes. Para conferir a integridade, baixe também [validacao.json](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/validacao.json) e [SHA256SUMS.txt](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/SHA256SUMS.txt) na mesma pasta dos ZIPs e execute `shasum -a 256 -c SHA256SUMS.txt` no macOS ou `sha256sum -c SHA256SUMS.txt` no Linux.
+O [resumo versionado](docs/evidencias/validacao.json) registra a revisão, execuções de origem, contagens e hashes dos pacotes. Para conferir a integridade, baixe também [validacao.json](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/validacao.json) e [SHA256SUMS.txt](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/SHA256SUMS.txt) na mesma pasta dos ZIPs e execute `shasum -a 256 -c SHA256SUMS.txt` no macOS ou `sha256sum -c SHA256SUMS.txt` no Linux.
 
-Cada execução em [Actions](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions) continua publicando **Artifacts**: `cobertura-dotnet`, `relatorio-allure` e `relatorio-postman` no workflow .NET e `qodana-report` na análise Qodana, reutilizada pela CI da main. Após a publicação da imagem, há também `imagem-ghcr`. Esses downloads da pipeline exigem login no GitHub e estão sujeitos à retenção. A release preserva uma cópia pública dos arquivos de cobertura, Allure, JUnit Postman e SARIF curto original do Qodana, sem alterar os resultados.
+Cada execução em [Actions](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/actions) continua publicando **Artifacts**: `cobertura-dotnet`, `relatorio-allure` e `relatorio-postman` no workflow .NET e `qodana-report` na análise Qodana, reutilizada pela CI da main. Após a publicação da imagem, há também `imagem-ghcr`. Esses downloads da pipeline exigem login no GitHub e estão sujeitos à retenção. A release preserva uma cópia pública dos arquivos de cobertura, Allure, JUnit Postman e SARIF curto original do Qodana, sem alterar os resultados.
 
 O resumo da execução .NET também mostra a cobertura consolidada. Os logs do job **Smoke HTTP em Docker** registram a verificação da API no container.
 
@@ -215,17 +217,19 @@ Os cenários HTTP de resultado acadêmico apresentam as etapas de autenticação
 
 ### Referência validada
 
-Resultados da revisão [`0902779`](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/commit/090277915f3073c18c8e62e1c8c3aa0e7e34f955), executada em `main` em 17/11/2026:
+Resultados da revisão [`0902779`](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/commit/090277915f3073c18c8e62e1c8c3aa0e7e34f955), executada em `main` em 17/11/2026:
 
 | Evidência | Resultado | Link |
 | --- | --- | --- |
-| xUnit | 48 testes aprovados: 12 unitários e 36 HTTP; nenhum ignorado | [Execução .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44197991680) |
-| Cobertura | 159/159 linhas (100%) e 39/40 ramificações (97,5%) | [Download público da cobertura](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/cobertura-dotnet.zip) |
-| Allure | 48 resultados aprovados, com cenários, etapas e anexos | [Download público do Allure](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/relatorio-allure.zip) |
-| Postman | Oito requisições e 17 asserções aprovadas no job Docker | [Download público do JUnit](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/relatorio-postman.zip) |
-| Qodana | Zero apontamentos no SARIF da análise executada | [Execução Qodana](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/runs/44197991803) · [SARIF público](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/qodana-sarif.zip) |
+| xUnit | 48 testes aprovados: 12 unitários e 36 HTTP; nenhum ignorado | [Execução .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/actions/runs/44197991680) |
+| Cobertura | 159/159 linhas (100%) e 39/40 ramificações (97,5%) | [Download público da cobertura](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/cobertura-dotnet.zip) |
+| Allure | 48 resultados aprovados, com cenários, etapas e anexos | [Download público do Allure](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/relatorio-allure.zip) |
+| Postman | Oito requisições e 17 asserções aprovadas no job Docker | [Download público do JUnit](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/relatorio-postman.zip) |
+| Qodana | Zero apontamentos no SARIF da análise executada | [Execução Qodana](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/actions/runs/44197991803) · [SARIF público](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/releases/download/evidencias-fase3-v2/qodana-sarif.zip) |
 
 Os números e os downloads da release são uma fotografia dessa revisão. Para alterações posteriores, consulte a execução correspondente. As evidências usam um commit identificado e permanecem consultáveis após a exclusão das branches temporárias.
+
+Os relatórios preservam os metadados originais da execução, inclusive o nome usado pelo repositório naquele momento.
 
 As 17 asserções Postman ficam no relatório JUnit. O Allure e a cobertura de código correspondem às suítes .NET, com 48 casos xUnit.
 
