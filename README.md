@@ -172,10 +172,9 @@ O pacote fica associado a este repositório em **Packages**, com a referência `
 
 O resumo do job e o artefato **imagem-ghcr/image.json** registram as referências, revisão, plataforma e atualização da tag `main`. A plataforma publicada é **linux/amd64**; no Docker Desktop com Apple Silicon, os comandos abaixo usam essa plataforma por emulação.
 
-A publicação usa `GITHUB_TOKEN`, com `packages: write` apenas no job responsável. Nenhuma credencial da API é incluída na imagem. O pacote inicial é **privado**, conforme o padrão do GHCR; o download exige acesso de leitura ao pacote. Com GitHub CLI autenticado com `read:packages`:
+A publicação usa `GITHUB_TOKEN`, com `packages: write` apenas no job responsável. Nenhuma credencial da API é incluída na imagem. O [pacote deste projeto](https://github.com/users/robertishimurasousa/packages/container/package/fiap-pos-tech-dotnet-azure-fase3) está **público** e pode ser baixado sem login:
 
 ```sh
-gh auth token | docker login ghcr.io --username robertishimurasousa --password-stdin
 docker pull --platform linux/amd64 ghcr.io/robertishimurasousa/fiap-pos-tech-dotnet-azure-fase3:main
 ```
 
@@ -191,7 +190,7 @@ Jwt__ChaveAssinatura="$ESCOLA_JWT_CHAVE" Jwt__CodigoAcesso="$ESCOLA_JWT_CODIGO" 
     ghcr.io/robertishimurasousa/fiap-pos-tech-dotnet-azure-fase3:main
 ```
 
-As configurações e os endpoints do Postman continuam iguais. Para repetir uma revisão específica, use a tag por SHA ou o digest do artefato da execução.
+As configurações e os endpoints do Postman continuam iguais. Para repetir uma revisão específica, use a tag por SHA ou o digest do artefato da execução. A visibilidade é gerenciada em **Packages**; se o pacote for tornado privado, será necessário autenticar o Docker com uma credencial que tenha `read:packages`.
 
 ### Relatórios para baixar
 

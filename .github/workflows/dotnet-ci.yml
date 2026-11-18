@@ -301,8 +301,8 @@ jobs:
               f"- Digest validado: `{details['digestReference']}`\n"
               f"- Plataforma: `{details['platform']}`\n"
               f"- Tag main atualizada: `{details['mainTagUpdated']}`\n\n"
-              "O smoke da imagem armazenada passou. O pacote inicial é privado; "
-              "o pull requer autenticação com acesso de leitura ao pacote.\n"
+              "O smoke da imagem armazenada passou. Consulte a visibilidade em Packages; "
+              "pacotes privados exigem autenticação com acesso de leitura.\n"
           )
           with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as report:
               report.write(summary)
