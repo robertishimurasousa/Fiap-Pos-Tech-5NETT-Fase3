@@ -4,7 +4,7 @@ API de resultado acadêmico desenvolvida para o Tech Challenge da **Pós Tech em
 
 [![Testes e cobertura .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml)
 
-[Arquitetura](#arquitetura) · [Executar localmente](#executar-localmente) · [Postman](#testar-no-postman) · [Testes](#executar-a-suíte) · [Relatórios e CI](#github-actions-e-evidência-para-a-fiap)
+[Arquitetura](#arquitetura) · [Executar localmente](#executar-localmente) · [Postman](#testar-no-postman) · [Testes](#executar-a-suíte) · [Relatórios e CI](#github-actions-e-evidência-para-a-fiap) · [Licença](#licença)
 
 ## Arquitetura
 
@@ -243,6 +243,14 @@ Abra `allure-report/index.html` no navegador. A configuração do gerador está 
 ## Segurança
 
 A [política de segurança](SECURITY.md) descreve as versões com manutenção e o canal privado do GitHub para relatar vulnerabilidades.
+
+## Licença
+
+O código e a documentação deste projeto estão disponíveis sob a [licença MIT](LICENSE), com copyright de 2026 de Robert Ishimura Sousa. A licença permite usar, modificar e redistribuir o projeto, inclusive comercialmente, mantendo o aviso de autoria e o texto da licença.
+
+O projeto tem finalidade educacional; isso não acrescenta restrições à licença MIT. Dependências, imagens base e materiais de terceiros mantêm suas próprias licenças e direitos.
+
+A imagem Docker inclui o arquivo em `/app/LICENSE` e o rótulo OCI `org.opencontainers.image.licenses=MIT`.
 
 ## Organização do código
 
