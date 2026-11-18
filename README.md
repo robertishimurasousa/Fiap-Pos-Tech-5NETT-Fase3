@@ -64,7 +64,7 @@ Resposta HTTP `200`:
 
 Pré-requisitos: Docker com Compose **ou** SDK .NET 10, além de OpenSSL para o comando abaixo. O SDK compatível está definido em [`global.json`](global.json).
 
-Crie o arquivo `.env` na raiz com dois valores aleatórios independentes. Execute este comando uma vez em um clone novo:
+O modelo [`.env.example`](.env.example) documenta as variáveis da API e a porta local. Para criar o `.env` na raiz com dois valores aleatórios independentes já preenchidos, execute este comando uma vez em um clone novo:
 
 ```sh
 (umask 077; set -C; printf 'ESCOLA_JWT_CHAVE=%s\nESCOLA_JWT_CODIGO=%s\n' "$(openssl rand -hex 32)" "$(openssl rand -hex 32)" > .env)
