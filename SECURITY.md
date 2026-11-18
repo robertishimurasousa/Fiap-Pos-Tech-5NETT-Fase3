@@ -17,7 +17,7 @@ com suporte de segurança próprio.
 
 ## Como reportar uma vulnerabilidade
 
-Use o [reporte privado de vulnerabilidade do GitHub](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/security/advisories/new).
+Use o [reporte privado de vulnerabilidade do GitHub](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/security/advisories/new).
 Esse canal está habilitado no repositório e requer uma conta GitHub.
 Também é possível acessá-lo pela aba **Security**, em **Report a vulnerability**.
 

@@ -214,6 +214,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      GHCR_IMAGE: ghcr.io/robertishimurasousa/fiap-pos-tech-dotnet-azure-fase3
     concurrency:
       group: ghcr-main
       cancel-in-progress: false
@@ -226,9 +228,8 @@ jobs:
 
       - name: Definir a referência da imagem
         run: |
-          repository="$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
-          echo "IMAGE_NAME=ghcr.io/$repository" >> "$GITHUB_ENV"
-          echo "IMAGE_SHA_TAG=ghcr.io/$repository:sha-$GITHUB_SHA" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=$GHCR_IMAGE" >> "$GITHUB_ENV"
+          echo "IMAGE_SHA_TAG=$GHCR_IMAGE:sha-$GITHUB_SHA" >> "$GITHUB_ENV"
 
       - name: Construir a imagem da revisão validada
         run: |
