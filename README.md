@@ -205,6 +205,10 @@ npx --yes allure@3.33.0 generate --clean
 
 Abra `allure-report/index.html` no navegador. A configuração do gerador está em `allurerc.json`, e `tests/allureConfig.json` direciona as duas suítes para `allure-results`. O pacote `Allure.Xunit` usa o runner xUnit 2.8.2 por compatibilidade com a descoberta de reporters.
 
+## Segurança
+
+A [política de segurança](SECURITY.md) descreve as versões com manutenção e o canal privado do GitHub para relatar vulnerabilidades.
+
 ## Organização do código
 
 ```text
