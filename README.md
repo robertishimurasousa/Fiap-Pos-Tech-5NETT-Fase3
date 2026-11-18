@@ -3,7 +3,6 @@
 API de resultado acadêmico desenvolvida para o Tech Challenge da **Pós Tech em Arquitetura de Sistemas .NET com Azure — FIAP 5NETT**. A aplicação calcula a média de duas provas e informa a situação do aluno, com autenticação JWT, documentação interativa e evidências de qualidade no GitHub Actions.
 
 [![Testes e cobertura .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/dotnet-ci.yml)
-[![Qodana](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/qodana_code_quality.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions/workflows/qodana_code_quality.yml)
 
 [Arquitetura](#arquitetura) · [Executar localmente](#executar-localmente) · [Postman](#testar-no-postman) · [Testes](#executar-a-suíte) · [Relatórios e CI](#github-actions-e-evidência-para-a-fiap)
 
@@ -22,6 +21,8 @@ O recorte é um serviço síncrono, sem persistência ou dependências externas 
 ![Fluxo do GitHub Actions com três jobs em paralelo: xUnit e relatórios, smoke Docker e Postman com oito requisições e 17 asserções. O Qodana roda em workflow próprio e também condiciona a revisão e o merge.](docs/images/fluxo-ci.png)
 
 O workflow executa três jobs em paralelo: testes .NET com cobertura e Allure, smoke HTTP em Docker e coleção Postman contra uma API Docker isolada. O Postman obtém o JWT automaticamente, verifica oito requisições com 17 asserções e produz um relatório JUnit, além de enviar o resultado à conta Postman. O Qodana possui um workflow próprio para análise estática. Os resultados convergem para a revisão e o merge; o tracejado roxo identifica essa dependência da análise estática.
+
+O painel ilustra as validações dos pull requests. Na `main`, a CI também chama o workflow Qodana e aguarda os quatro validadores antes de publicar a imagem no GHCR, conforme a seção de publicação abaixo.
 
 ### Cenários de negócio
 
@@ -145,7 +146,7 @@ Os testes configuram as próprias credenciais de demonstração. A suíte usa **
 
 O workflow [**Testes e cobertura .NET**](.github/workflows/dotnet-ci.yml) verifica a formatação C#, compila com warnings tratados como erros e executa as suítes xUnit unitária e HTTP. O job separado de Docker compila a imagem e verifica a resposta `401` sem token e o cálculo autenticado com resposta `200`, média `7` e situação `Aprovado`.
 
-O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Escola.slnx` com o linter Community para .NET. Ambos podem ser acionados por pushes em `main` ou `rob-*`, por pull requests e manualmente. As branches temporárias seguem o padrão `rob-<número>-<assunto>`. O Qodana também acompanha `releases/*` e envia a análise ao projeto configurado no Qodana Cloud. O resultado SARIF público pode ser consultado sem acesso ao Cloud.
+O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Escola.slnx` com o linter Community para .NET. Em pushes na `main`, ele é reutilizado pela CI para que a publicação dependa da análise da mesma revisão. Em pull requests e pushes em `rob-*` ou `releases/*`, continua executando como workflow próprio. Ambos mantêm acionamento manual. As branches temporárias seguem o padrão `rob-<número>-<assunto>`. O Qodana envia a análise ao projeto configurado no Qodana Cloud; o resultado SARIF público pode ser consultado sem acesso ao Cloud.
 
 ### Coleção Postman na CI
 
@@ -156,6 +157,41 @@ Ao recriar uma coleção ou um ambiente, publique os recursos no Postman Cloud e
 A coleção obtém o JWT e o reutiliza nos cálculos. Seus oito cenários verificam aprovação, reprovação, entradas inválidas e autenticação. Falhas de asserção reprovam o job. O resultado é enviado ao Postman, e o artefato **relatorio-postman** disponibiliza `results.xml` no formato JUnit no Actions, inclusive quando há falha de teste.
 
 O job roda em pushes e PRs do próprio repositório. PRs de forks e do Dependabot não executam esse job, pois não recebem a secret. O runner manual `postman/run.py` continua usando os arquivos versionados; a CI usa a versão da coleção salva no Postman. Mudanças nessa coleção podem alterar os testes executados pela CI.
+
+### Imagem da API no GHCR
+
+Após o merge, o push na `main` executa xUnit/cobertura, smoke Docker, Postman e Qodana. Somente após os quatro jobs aprovarem, **Publicar imagem no GHCR** constrói a imagem, executa o smoke, publica e repete o smoke usando o digest baixado do registro. Pull requests e branches de trabalho não publicam imagens.
+
+O pacote fica associado a este repositório em **Packages**, com a referência `ghcr.io/robertishimurasousa/fiap-pos-tech-dotnet-azure-fase3`:
+
+| Referência | Uso |
+| --- | --- |
+| `main` | Última publicação aprovada que ainda correspondia à revisão atual da main |
+| `sha-<SHA completo do commit>` | Identificar a revisão construída |
+| `@sha256:<digest>` | Baixar o conteúdo exato validado no registro |
+
+O resumo do job e o artefato **imagem-ghcr/image.json** registram as referências, revisão, plataforma e atualização da tag `main`. A plataforma publicada é **linux/amd64**; no Docker Desktop com Apple Silicon, os comandos abaixo usam essa plataforma por emulação.
+
+A publicação usa `GITHUB_TOKEN`, com `packages: write` apenas no job responsável. Nenhuma credencial da API é incluída na imagem. O pacote inicial é **privado**, conforme o padrão do GHCR; o download exige acesso de leitura ao pacote. Com GitHub CLI autenticado com `read:packages`:
+
+```sh
+gh auth token | docker login ghcr.io --username robertishimurasousa --password-stdin
+docker pull --platform linux/amd64 ghcr.io/robertishimurasousa/fiap-pos-tech-dotnet-azure-fase3:main
+```
+
+Para executar a imagem publicada, prepare o `.env` conforme a seção de execução local e libere a porta 5080:
+
+```sh
+. ./.env
+Jwt__ChaveAssinatura="$ESCOLA_JWT_CHAVE" Jwt__CodigoAcesso="$ESCOLA_JWT_CODIGO" \
+  docker run --rm --platform linux/amd64 \
+    --publish 127.0.0.1:5080:8080 \
+    --env ASPNETCORE_ENVIRONMENT=Development \
+    --env Jwt__ChaveAssinatura --env Jwt__CodigoAcesso \
+    ghcr.io/robertishimurasousa/fiap-pos-tech-dotnet-azure-fase3:main
+```
+
+As configurações e os endpoints do Postman continuam iguais. Para repetir uma revisão específica, use a tag por SHA ou o digest do artefato da execução.
 
 ### Relatórios para baixar
 
@@ -170,7 +206,7 @@ A [release de evidências públicas](https://github.com/robertishimurasousa/Fiap
 
 O [resumo versionado](docs/evidencias/validacao.json) registra a revisão, execuções de origem, contagens e hashes dos pacotes. Para conferir a integridade, baixe também [validacao.json](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/validacao.json) e [SHA256SUMS.txt](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/releases/download/evidencias-fase3-v2/SHA256SUMS.txt) na mesma pasta dos ZIPs e execute `shasum -a 256 -c SHA256SUMS.txt` no macOS ou `sha256sum -c SHA256SUMS.txt` no Linux.
 
-Cada execução em [Actions](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions) continua publicando **Artifacts**: `cobertura-dotnet`, `relatorio-allure` e `relatorio-postman` no workflow .NET e `qodana-report` no workflow Qodana. Esses downloads da pipeline exigem login no GitHub e estão sujeitos à retenção. A release preserva uma cópia pública dos arquivos de cobertura, Allure, JUnit Postman e SARIF curto original do Qodana, sem alterar os resultados.
+Cada execução em [Actions](https://github.com/robertishimurasousa/Fiap-Pos-Tech-DotNet-Azure-Fase3/actions) continua publicando **Artifacts**: `cobertura-dotnet`, `relatorio-allure` e `relatorio-postman` no workflow .NET e `qodana-report` na análise Qodana, reutilizada pela CI da main. Após a publicação da imagem, há também `imagem-ghcr`. Esses downloads da pipeline exigem login no GitHub e estão sujeitos à retenção. A release preserva uma cópia pública dos arquivos de cobertura, Allure, JUnit Postman e SARIF curto original do Qodana, sem alterar os resultados.
 
 O resumo da execução .NET também mostra a cobertura consolidada. Os logs do job **Smoke HTTP em Docker** registram a verificação da API no container.
 

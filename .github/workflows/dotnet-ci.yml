@@ -194,3 +194,127 @@ jobs:
           if docker container inspect escola-postman > /dev/null 2>&1; then
             docker rm --force escola-postman > /dev/null
           fi
+
+  qodana-main:
+    name: Qodana na main
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    permissions:
+      contents: read
+      checks: write
+    uses: ./.github/workflows/qodana_code_quality.yml
+    secrets:
+      QODANA_TOKEN_181914213: ${{ secrets.QODANA_TOKEN_181914213 }}
+
+  publish-image:
+    name: Publicar imagem no GHCR
+    needs: [test, container-smoke, postman, qodana-main]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    concurrency:
+      group: ghcr-main
+      cancel-in-progress: false
+
+    steps:
+      - name: Obter o código validado
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Definir a referência da imagem
+        run: |
+          repository="$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+          echo "IMAGE_NAME=ghcr.io/$repository" >> "$GITHUB_ENV"
+          echo "IMAGE_SHA_TAG=ghcr.io/$repository:sha-$GITHUB_SHA" >> "$GITHUB_ENV"
+
+      - name: Construir a imagem da revisão validada
+        run: |
+          docker build --platform linux/amd64 \
+            --label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --label 'org.opencontainers.image.title=Escola — API de Resultado Acadêmico' \
+            --tag "$IMAGE_SHA_TAG" .
+
+      - name: Validar a imagem antes de publicar
+        run: python3 scripts/smoke-docker.py "$IMAGE_SHA_TAG"
+
+      - name: Autenticar no GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io \
+            --username "$GITHUB_ACTOR" --password-stdin
+
+      - name: Publicar a tag do commit
+        run: |
+          docker push "$IMAGE_SHA_TAG"
+          reference="$(docker image inspect --format '{{index .RepoDigests 0}}' "$IMAGE_SHA_TAG")"
+          echo "IMAGE_DIGEST_REFERENCE=$reference" >> "$GITHUB_ENV"
+
+      - name: Validar a imagem armazenada pelo digest
+        run: |
+          docker pull "$IMAGE_DIGEST_REFERENCE"
+          revision="$(docker image inspect \
+            --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' \
+            "$IMAGE_DIGEST_REFERENCE")"
+          test "$revision" = "$GITHUB_SHA"
+          python3 scripts/smoke-docker.py "$IMAGE_DIGEST_REFERENCE"
+
+      - name: Atualizar a tag main se a revisão ainda for atual
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          current_sha="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha')"
+          if [ "$current_sha" = "$GITHUB_SHA" ]; then
+            docker tag "$IMAGE_DIGEST_REFERENCE" "$IMAGE_NAME:main"
+            docker push "$IMAGE_NAME:main"
+            echo "IMAGE_MAIN_UPDATED=true" >> "$GITHUB_ENV"
+          else
+            echo 'A main avançou; preservando a tag main e mantendo a imagem por SHA.'
+            echo "IMAGE_MAIN_UPDATED=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Registrar referências da imagem
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          details = {
+              "image": os.environ["IMAGE_NAME"],
+              "shaTag": os.environ["IMAGE_SHA_TAG"],
+              "digestReference": os.environ["IMAGE_DIGEST_REFERENCE"],
+              "revision": os.environ["GITHUB_SHA"],
+              "platform": "linux/amd64",
+              "mainTagUpdated": os.environ["IMAGE_MAIN_UPDATED"] == "true",
+          }
+          output = Path("TestResults/imagem/image.json")
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps(details, indent=2) + "\n", encoding="utf-8")
+          summary = (
+              "## Imagem publicada no GHCR\n\n"
+              f"- Tag do commit: `{details['shaTag']}`\n"
+              f"- Digest validado: `{details['digestReference']}`\n"
+              f"- Plataforma: `{details['platform']}`\n"
+              f"- Tag main atualizada: `{details['mainTagUpdated']}`\n\n"
+              "O smoke da imagem armazenada passou. O pacote inicial é privado; "
+              "o pull requer autenticação com acesso de leitura ao pacote.\n"
+          )
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as report:
+              report.write(summary)
+          PY
+
+      - name: Publicar metadados da imagem
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: imagem-ghcr
+          path: TestResults/imagem/image.json
+          if-no-files-found: error
+
+      - name: Encerrar a sessão no GHCR
+        if: ${{ always() }}
+        run: docker logout ghcr.io
