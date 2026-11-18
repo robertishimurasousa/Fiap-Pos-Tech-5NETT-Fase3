@@ -151,6 +151,8 @@ O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Esco
 
 O job **Postman HTTP em Docker** instala o Postman CLI e autentica com a secret de repositório `POSTMAN_API_KEY`. Executa a coleção e o ambiente salvos no Postman, pelos IDs configurados no workflow. A URL, o código de demonstração e o token inicial são sobrescritos apenas para a execução; o ambiente salvo permanece intacto. A API usa uma porta de loopback disponível e credenciais temporárias, e o container é removido ao terminar.
 
+Ao recriar uma coleção ou um ambiente, publique os recursos no Postman Cloud e atualize seus IDs no workflow. No modo Native Git do Postman Desktop, os IDs locais podem ser diferentes dos IDs do Cloud; confira o mapeamento `cloudResources` em `.postman/resources.yaml` após o **Push to Postman Cloud**. A CI usa os IDs do Cloud, e um `git push` não publica os recursos no Postman.
+
 A coleção obtém o JWT e o reutiliza nos cálculos. Seus oito cenários verificam aprovação, reprovação, entradas inválidas e autenticação. Falhas de asserção reprovam o job. O resultado é enviado ao Postman, e o artefato **relatorio-postman** disponibiliza `results.xml` no formato JUnit no Actions, inclusive quando há falha de teste.
 
 O job roda em pushes e PRs do próprio repositório. PRs de forks e do Dependabot não executam esse job, pois não recebem a secret. O runner manual `postman/run.py` continua usando os arquivos versionados; a CI usa a versão da coleção salva no Postman. Mudanças nessa coleção podem alterar os testes executados pela CI.
