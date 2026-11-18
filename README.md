@@ -4,7 +4,7 @@ API de resultado acadêmico desenvolvida para o Tech Challenge da **Pós Tech em
 
 [![Testes e cobertura .NET](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/actions/workflows/dotnet-ci.yml/badge.svg?branch=main)](https://github.com/robertishimurasousa/Fiap-Pos-Tech-5NETT-Fase3/actions/workflows/dotnet-ci.yml)
 
-[Arquitetura](#arquitetura) · [Executar localmente](#executar-localmente) · [Postman](#testar-no-postman) · [Testes](#executar-a-suíte) · [Relatórios e CI](#github-actions-e-evidência-para-a-fiap) · [Licença](#licença)
+[Arquitetura](#arquitetura) · [Executar localmente](#executar-localmente) · [Postman](#testar-no-postman) · [Testes](#executar-a-suíte) · [Relatórios e CI](#github-actions-e-evidência-para-a-fiap) · [Vídeo e PDF](#demonstração-em-vídeo) · [Licença](#licença)
 
 ## Arquitetura
 
@@ -270,10 +270,16 @@ postman/                  Coleção, ambiente e runner local
 scripts/                  Smoke HTTP da API no Docker
 docs/images/              Exportações dos fluxos do Whimsical
 docs/evidencias/          Resumo e origem dos relatórios públicos
+docs/entrega/             PDF de apresentação e links da entrega acadêmica
 .github/workflows/        Testes, cobertura, Allure, Docker e Qodana
 ```
 
 ## Demonstração em vídeo
+
+- [Assistir ao vídeo no Screencast](https://app.screencast.com/sepbwjcUpLf23)
+- [Abrir ou baixar o PDF de entrega](docs/entrega/FIAP-5NETT-Fase3-Entrega.pdf)
+
+O vídeo está hospedado no Screencast devido ao limite de tamanho para upload na plataforma da Pós Tech. O PDF reúne o endereço do repositório, o acesso ao vídeo e os links das evidências públicas.
 
 A demonstração segue esta sequência e pode ser acompanhada com o conteúdo público deste repositório:
 
