@@ -171,8 +171,8 @@ jobs:
       - name: Executar coleção Postman
         id: collection
         run: |
-          postman collection run "60078620-d579e0b9-3f44-4d48-a484-810c24bf9880" \
-            --environment "60078620-0225f515-3651-4692-ab5b-7e32dadfc7bd" \
+          postman collection run "60078620-16e7c732-a558-476a-aa08-0a83c8d8c81b" \
+            --environment "60078620-5b4e1266-d8e0-4c1c-b58f-b3952fcdd707" \
             --env-var "baseUrl=$POSTMAN_BASE_URL" \
             --env-var "codigoAcesso=$ESCOLA_JWT_CODIGO" \
             --env-var 'accessToken=' \

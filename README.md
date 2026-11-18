@@ -64,7 +64,7 @@ Resposta HTTP `200`:
 
 Pré-requisitos: Docker com Compose **ou** SDK .NET 10, além de OpenSSL para o comando abaixo. O SDK compatível está definido em [`global.json`](global.json).
 
-Crie o arquivo `.env` na raiz com dois valores aleatórios independentes. Execute este comando uma vez em um clone novo:
+O modelo [`.env.example`](.env.example) documenta as variáveis da API e a porta local. Para criar o `.env` na raiz com dois valores aleatórios independentes já preenchidos, execute este comando uma vez em um clone novo:
 
 ```sh
 (umask 077; set -C; printf 'ESCOLA_JWT_CHAVE=%s\nESCOLA_JWT_CODIGO=%s\n' "$(openssl rand -hex 32)" "$(openssl rand -hex 32)" > .env)
@@ -150,6 +150,8 @@ O workflow [**Qodana**](.github/workflows/qodana_code_quality.yml) analisa `Esco
 ### Coleção Postman na CI
 
 O job **Postman HTTP em Docker** instala o Postman CLI e autentica com a secret de repositório `POSTMAN_API_KEY`. Executa a coleção e o ambiente salvos no Postman, pelos IDs configurados no workflow. A URL, o código de demonstração e o token inicial são sobrescritos apenas para a execução; o ambiente salvo permanece intacto. A API usa uma porta de loopback disponível e credenciais temporárias, e o container é removido ao terminar.
+
+Ao recriar uma coleção ou um ambiente, publique os recursos no Postman Cloud e atualize seus IDs no workflow. No modo Native Git do Postman Desktop, os IDs locais podem ser diferentes dos IDs do Cloud; confira o mapeamento `cloudResources` em `.postman/resources.yaml` após o **Push to Postman Cloud**. A CI usa os IDs do Cloud, e um `git push` não publica os recursos no Postman.
 
 A coleção obtém o JWT e o reutiliza nos cálculos. Seus oito cenários verificam aprovação, reprovação, entradas inválidas e autenticação. Falhas de asserção reprovam o job. O resultado é enviado ao Postman, e o artefato **relatorio-postman** disponibiliza `results.xml` no formato JUnit no Actions, inclusive quando há falha de teste.
 
