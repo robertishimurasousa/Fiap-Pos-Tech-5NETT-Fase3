@@ -276,7 +276,6 @@ docs/entrega/             PDF de apresentação e links da entrega acadêmica
 
 ## Demonstração em vídeo
 
-<iframe scrolling='no' frameborder='0' style='width: 1672px; height: 1080px; border:0;' src='https://app.screencast.com/sepbwjcUpLf23/e' allowfullscreen></iframe>
 
 - [Assistir ao vídeo no Screencast](https://app.screencast.com/sepbwjcUpLf23)
 - [Abrir ou baixar o PDF de entrega](docs/entrega/FIAP-5NETT-Fase3-Entrega.pdf)
